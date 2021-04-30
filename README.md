@@ -1,3 +1,9 @@
+This is a fork of [Fast Downward](http://www.fast-downward.org/) extended with an implementation of the XES bounded-cost search algorithm as introduced in the IJCAI'21 paper **Bounded-Cost Search Using Estimates of Uncertainty** (M. Fickert, T. Gu, and W. Ruml). The repository also contains implementations of the other bounded-cost algorithms evaluated in the paper, including potential search, BEES, and BEEPS.
+
+Example usage for XES:
+
+`./fast-downward.py domain.pddl problem.pddl --evaluator "hff=ff()"" --search "xes(hff, ff_distance(hff), preferred=[hff], bound=42)"`
+
 # Fast Downward
 
 Fast Downward is a domain-independent classical planning system.
