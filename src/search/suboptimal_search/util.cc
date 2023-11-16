@@ -11,12 +11,16 @@ using namespace floating_point_evaluator;
 using namespace heuristic_error;
 using namespace options;
 
-namespace bounded_cost_search {
+namespace suboptimal_search {
 void add_warm_start_options(OptionParser &parser) {
 	parser.add_option<int>("warm_start_samples", "Initialize heuristic and distance error with the given number of virtual error samples.", "50",
 	                       Bounds("0", "infinity"));
 	parser.add_option<double>("warm_start_value_distance", "Value to warm-start the distance error with.", ".2", Bounds("0", "1"));
 	parser.add_option<double>("warm_start_value_heuristic", "Value to warm-start the heuristic error with.", "1");
+}
+
+void add_bounded_cost_warm_start_options(OptionParser &parser) {
+	add_warm_start_options(parser);
 	parser.add_option<bool>("initialize_error_with_cost_bound",
 	                        "assume that the initial heuristic value should be equal to the cost bound for the initialization of the heuristic error", "false");
 }
@@ -52,15 +56,16 @@ auto get_heuristic_error(bool percentage_based_error, const std::shared_ptr<Eval
 }
 
 auto get_debiased_heuristic(bool percentage_based_error, const std::shared_ptr<Evaluator> &heuristic,
-                            const std::shared_ptr<FloatingPointEvaluator> &debiased_distance, const std::shared_ptr<HeuristicError> &heuristic_error)
-		-> std::shared_ptr<FloatingPointEvaluator> {
+                            const std::shared_ptr<FloatingPointEvaluator> &debiased_distance, const std::shared_ptr<HeuristicError> &heuristic_error,
+                            bool admissible_h, bool cache_estimates) -> std::shared_ptr<FloatingPointEvaluator> {
 	auto debiased_heuristic_opts = options::Options();
-	debiased_heuristic_opts.set("cache_estimates", false);
+	debiased_heuristic_opts.set("cache_estimates", cache_estimates);
 	debiased_heuristic_opts.set("h", heuristic);
 	debiased_heuristic_opts.set("d", debiased_distance);
 	debiased_heuristic_opts.set("error", heuristic_error);
+	debiased_heuristic_opts.set("admissible_h", admissible_h);
 	return percentage_based_error ? std::static_pointer_cast<FloatingPointEvaluator>(std::make_shared<PercentageBasedDebiasedHeuristic>(debiased_heuristic_opts))
 	                              : std::static_pointer_cast<FloatingPointEvaluator>(std::make_shared<DebiasedHeuristic>(debiased_heuristic_opts));
 }
 
-} // namespace bounded_cost_search
+} // namespace suboptimal_search

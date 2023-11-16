@@ -1,5 +1,7 @@
 #include "incremental_canonical_pdbs.h"
 
+#include <limits>
+
 #include "canonical_pdbs.h"
 #include "pattern_database.h"
 

@@ -20,6 +20,8 @@ class StateID {
         : value(value_) {
     }
 
+    friend struct std::hash<StateID>;
+
     // No implementation to prevent default construction
     StateID();
 public:
@@ -36,6 +38,13 @@ public:
         return !(*this == other);
     }
 };
+
+namespace std {
+template <>
+struct hash<StateID> {
+    auto operator()(const StateID &state_id) const { return hash<int>()(state_id.value); }
+};
+}
 
 
 #endif

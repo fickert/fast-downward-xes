@@ -50,6 +50,6 @@ void OneStepError::update_error() {
 auto OneStepError::get_heuristic_error_variance() const -> double {
 	assert(count > 0);
 	assert(heuristic_errors_M2_sum >= 0);
-	return heuristic_errors_M2_sum / (count - 1);
+	return count == 1 ? 0. : heuristic_errors_M2_sum / (count - 1);
 }
 } // namespace heuristic_error

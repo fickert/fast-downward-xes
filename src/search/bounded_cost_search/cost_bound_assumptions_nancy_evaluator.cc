@@ -16,6 +16,7 @@ NancyAssumptionsCBSEvaluator::NancyAssumptionsCBSEvaluator(const options::Option
 	  cost_bound(opts.get<int>("cost_bound")),
 	  f_evaluator(opts.get<std::shared_ptr<Evaluator>>("f")),
 	  f_hat_evaluator(opts.get<std::shared_ptr<floating_point_evaluator::FloatingPointEvaluator>>("f_hat")),
+	  d_hat_evaluator(opts.get<std::shared_ptr<floating_point_evaluator::FloatingPointEvaluator>>("d_hat", nullptr)),
 	  heuristic_error(opts.get<std::shared_ptr<heuristic_error::HeuristicError>>("heuristic_error", nullptr)) {}
 
 auto NancyAssumptionsCBSEvaluator::compute_value(EvaluationContext &eval_context) -> double {
@@ -44,7 +45,9 @@ auto NancyAssumptionsCBSEvaluator::compute_value(EvaluationContext &eval_context
 	// https://en.wikipedia.org/wiki/Truncated_normal_distribution
 	// https://people.sc.fsu.edu/~jburkardt/presentations/truncated_normal.pdf
 	const auto mean = static_cast<double>(f_hat);
-	const auto standard_deviation = heuristic_error ? std::sqrt(heuristic_error->get_heuristic_error_variance()) : std::abs(f_hat - f) / 2;
+	assert(!heuristic_error || d_hat_evaluator);
+	const auto standard_deviation = heuristic_error ? std::sqrt(heuristic_error->get_heuristic_error_variance() * d_hat_evaluator->compute_result(eval_context))
+	                                                : std::abs(f_hat - f) / 2;
 	assert(standard_deviation >= 0.);
 	if (standard_deviation == 0.)
 		return mean <= cost_bound + .5 ? 1. : 0.;

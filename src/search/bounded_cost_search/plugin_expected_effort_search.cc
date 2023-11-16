@@ -9,17 +9,18 @@
 #include "../heuristic_error/one_step_heuristic_error.h"
 #include "../option_parser.h"
 #include "../plugin.h"
+#include "../suboptimal_search/util.h"
 #include "cost_bound_assumptions_nancy_evaluator.h"
 #include "eager_bounded_cost_search.h"
-#include "util.h"
 
 using namespace floating_point_evaluator;
+using namespace suboptimal_search;
 
 namespace bounded_cost_search {
 static std::shared_ptr<SearchEngine> _parse(options::OptionParser &parser) {
 	parser.add_option<std::shared_ptr<Evaluator>>("heuristic", "heuristic");
 	parser.add_option<std::shared_ptr<Evaluator>>("distance", "distance");
-	add_warm_start_options(parser);
+	add_bounded_cost_warm_start_options(parser);
 	add_percentage_based_error_option(parser);
 	add_online_variance_option(parser);
 	add_f_hat_then_d_tie_breaking_option(parser);
@@ -59,8 +60,10 @@ static std::shared_ptr<SearchEngine> _parse(options::OptionParser &parser) {
 	nancy_assumptions_opts.set("cost_bound", opts.get<int>("bound"));
 	nancy_assumptions_opts.set<std::shared_ptr<Evaluator>>("f", f_evaluator);
 	nancy_assumptions_opts.set<std::shared_ptr<FloatingPointEvaluator>>("f_hat", f_hat_evaluator);
-	if (opts.get<bool>("use_online_variance"))
+	if (opts.get<bool>("use_online_variance")) {
 		nancy_assumptions_opts.set<std::shared_ptr<heuristic_error::HeuristicError>>("heuristic_error", heuristic_error);
+		nancy_assumptions_opts.set<std::shared_ptr<FloatingPointEvaluator>>("d_hat", debiased_distance);
+	}
 	auto nancy_assumptions_evaluator = std::make_shared<bounded_cost_search::NancyAssumptionsCBSEvaluator>(nancy_assumptions_opts);
 
 	auto expected_work = std::make_shared<DivisionEvaluator>(debiased_distance, nancy_assumptions_evaluator);

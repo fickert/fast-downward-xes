@@ -25,12 +25,18 @@ protected:
 	using compare_type = std::function<bool(const internal_value_type &, const internal_value_type &)>;
 
 	// default comparison function for open lists based on std::priority_queue (lexicographical comparison)
-	static constexpr auto default_compare = [](const auto &lhs, const auto &rhs) {
-		return lhs.first > rhs.first;
-	};
+	static constexpr auto get_default_compare() {
+		return [](const auto &lhs, const auto &rhs) {
+			return lhs.first > rhs.first;
+		};
+	}
 
 public:
 	[[nodiscard]] virtual auto top() const -> const value_type & = 0;
+	[[nodiscard]] virtual auto top_key() const -> const key_type & {
+		std::cerr << "top_key is not implemented for this queue" << std::endl;
+		utils::exit_with(utils::ExitCode::SEARCH_CRITICAL_ERROR);
+	}
 	[[nodiscard]] virtual auto empty() const -> bool = 0;
 	virtual void push(const key_type &key, const value_type &value, bool preferred) = 0;
 	virtual void emplace(const key_type &key, value_type &&value, bool preferred) = 0;

@@ -8,11 +8,12 @@
 #include "../heuristic_error/one_step_heuristic_error.h"
 #include "../option_parser.h"
 #include "../plugin.h"
+#include "../suboptimal_search/util.h"
 #include "eager_bounded_cost_search.h"
 #include "linear_relative_error_potential_evaluator.h"
-#include "util.h"
 
 using namespace floating_point_evaluator;
+using namespace suboptimal_search;
 
 namespace bounded_cost_search {
 static auto create_potential_search(options::Options &opts, const std::shared_ptr<FloatingPointEvaluator> &heuristic) -> std::shared_ptr<SearchEngine> {
@@ -57,7 +58,7 @@ static std::shared_ptr<SearchEngine> _parse_pts(OptionParser &parser) {
 static std::shared_ptr<SearchEngine> _parse_pts_hat(OptionParser &parser) {
 	parser.add_option<std::shared_ptr<Evaluator>>("heuristic", "heuristic");
 	parser.add_option<std::shared_ptr<Evaluator>>("distance", "distance");
-	add_warm_start_options(parser);
+	add_bounded_cost_warm_start_options(parser);
 	add_percentage_based_error_option(parser);
 	add_f_hat_then_d_tie_breaking_option(parser);
 	add_options_to_parser(parser);

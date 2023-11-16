@@ -769,6 +769,7 @@ fast_downward_plugin(
         floating_point_evaluator/floating_point_evaluator_wrapper
         floating_point_evaluator/fp_division_evaluator
         floating_point_evaluator/fp_sum_evaluator
+        floating_point_evaluator/fp_weighted_evaluator
     DEPENDENCY_ONLY
 )
 
@@ -799,6 +800,25 @@ fast_downward_plugin(
 )
 
 fast_downward_plugin(
+    NAME EXPANSION_DELAY
+    HELP "Plugin containing the code for expansion delay"
+    SOURCES
+        expansion_delay/expansion_delay
+        expansion_delay/expansion_delay_evaluator
+    DEPENDS FLOATING_POINT_EVALUATOR
+    DEPENDENCY_ONLY
+)
+
+fast_downward_plugin(
+    NAME SUBOPTIMAL_SEARCH
+    HELP "Plugin containing shared code for bounded-cost and bounded-suboptimal search algorithms"
+    SOURCES
+        suboptimal_search/eager_suboptimal_search
+        suboptimal_search/util
+    DEPENDS FLOATING_POINT_EVALUATOR HEURISTIC_ERROR
+)
+
+fast_downward_plugin(
     NAME BOUNDED_COST_SEARCH
     HELP "Plugin containing the code for bounded-cost search algorithms"
     SOURCES
@@ -809,7 +829,27 @@ fast_downward_plugin(
         bounded_cost_search/plugin_expected_effort_search
         bounded_cost_search/plugin_potential_search
         bounded_cost_search/util
-    DEPENDS FLOATING_POINT_EVALUATOR FLOATING_POINT_OPEN_LIST HEURISTIC_ERROR
+    DEPENDS FLOATING_POINT_EVALUATOR FLOATING_POINT_OPEN_LIST HEURISTIC_ERROR SUBOPTIMAL_SEARCH
+)
+
+fast_downward_plugin(
+    NAME BOUNDED_SUBOPTIMAL_SEARCH
+    HELP "Plugin containing the code for bounded-suboptimal search algorithms"
+    SOURCES
+        bounded_suboptimal_search/alternating_dynamic_potential_search
+        bounded_suboptimal_search/alternating_speedy_search
+        bounded_suboptimal_search/dynamic_bounded_cost_explicit_estimation_search
+        bounded_suboptimal_search/dynamic_expected_effort_search
+        bounded_suboptimal_search/dynamic_potential_search
+        bounded_suboptimal_search/explicit_estimation_search
+        bounded_suboptimal_search/extended_dynamic_expected_effort_search
+        bounded_suboptimal_search/f_hat_min_evaluator
+        bounded_suboptimal_search/greedy_explicit_estimation_search
+        bounded_suboptimal_search/remaining_expansions_evaluator
+        bounded_suboptimal_search/reordering_dynamic_expected_effort_search
+        bounded_suboptimal_search/suboptimality_bound_assumptions_nancy_evaluator
+        bounded_suboptimal_search/weighted_astar_search
+    DEPENDS FLOATING_POINT_EVALUATOR FLOATING_POINT_OPEN_LIST HEURISTIC_ERROR EXPANSION_DELAY SUBOPTIMAL_SEARCH BOOST
 )
 
 fast_downward_plugin(

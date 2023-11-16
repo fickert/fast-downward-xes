@@ -2,6 +2,7 @@
 #define FLOATING_POINT_EVALUATOR_FLOATING_POINT_EVALUATOR_H
 
 #include <cmath>
+#include <limits>
 
 #include "../per_state_information.h"
 
@@ -47,7 +48,7 @@ public:
 	static void add_options_to_parser(options::OptionParser &parser);
 
 	auto does_cache_estimates() const -> bool { return cache_evaluator_values; }
-	auto is_estimate_cached(const GlobalState &state) const { return std::isnan(cache[state]); }
+	auto is_estimate_cached(const GlobalState &state) const { return !std::isnan(cache[state]); }
 	/*
 	  Calling get_cached_estimate is only allowed if an estimate for
 	  the given state is cached, i.e., is_estimate_cached returns true.

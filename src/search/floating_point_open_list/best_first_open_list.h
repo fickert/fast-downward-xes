@@ -17,13 +17,14 @@ public:
 	using typename FloatingPointOpenList<N, T>::key_type;
 	using typename FloatingPointOpenList<N, T>::value_type;
 
-	auto top() const -> const value_type & override { return queue.top().second; }
+	[[nodiscard]] auto top() const -> const value_type & override { return queue.top().second; }
+	[[nodiscard]] auto top_key() const -> const key_type & override { return queue.top().first; }
 	[[nodiscard]] auto empty() const -> bool override { return queue.empty(); }
 	void push(const key_type &key, const value_type &value, bool) override { queue.push({key, value}); }
 	void emplace(const key_type &key, value_type &&value, bool) override { queue.emplace(key, value); }
 	void pop() override { queue.pop(); }
 
-	BestFirstOpenList() : BestFirstOpenList(FloatingPointOpenList<N, T>::default_compare) {}
+	BestFirstOpenList() : BestFirstOpenList(FloatingPointOpenList<N, T>::get_default_compare()) {}
 	explicit BestFirstOpenList(compare_type compare) : FloatingPointOpenList<N, T>(), queue(compare) {}
 };
 } // namespace floating_point_open_list

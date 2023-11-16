@@ -18,12 +18,13 @@
 #include "../heuristic_error/one_step_heuristic_error.h"
 #include "../option_parser.h"
 #include "../options/plugin.h"
+#include "../suboptimal_search/util.h"
 #include "cost_bound_assumptions_nancy_evaluator.h"
 #include "linear_relative_error_potential_evaluator.h"
-#include "util.h"
 
 using namespace floating_point_evaluator;
 using namespace floating_point_open_list;
+using namespace suboptimal_search;
 
 namespace bounded_cost_search {
 template <std::size_t N>
@@ -51,7 +52,7 @@ void BoundedCostExplicitEstimationSearch<N>::insert(EvaluationContext &eval_cont
 static auto _parse_bees(OptionParser &parser) -> std::shared_ptr<SearchEngine> {
 	parser.add_option<std::shared_ptr<Evaluator>>("heuristic", "heuristic");
 	parser.add_option<std::shared_ptr<Evaluator>>("distance", "distance");
-	add_warm_start_options(parser);
+	add_bounded_cost_warm_start_options(parser);
 	add_percentage_based_error_option(parser);
 	add_d_tie_breaking_option(parser);
 	bounded_cost_search::add_options_to_parser(parser);
@@ -110,7 +111,7 @@ static auto _parse_bees(OptionParser &parser) -> std::shared_ptr<SearchEngine> {
 static std::shared_ptr<SearchEngine> _parse_beeps(OptionParser &parser) {
 	parser.add_option<std::shared_ptr<Evaluator>>("heuristic", "heuristic");
 	parser.add_option<std::shared_ptr<Evaluator>>("distance", "distance");
-	add_warm_start_options(parser);
+	add_bounded_cost_warm_start_options(parser);
 	add_percentage_based_error_option(parser);
 	add_f_hat_then_d_tie_breaking_option(parser);
 	bounded_cost_search::add_options_to_parser(parser);
@@ -194,9 +195,9 @@ static auto _parse_pbees(OptionParser &parser) -> std::shared_ptr<SearchEngine> 
 	parser.add_option<std::shared_ptr<Evaluator>>("heuristic", "heuristic");
 	parser.add_option<std::shared_ptr<Evaluator>>("distance", "distance");
 	parser.add_option<double>("focal_threshold",
-	                          "if a search node has at least the given probability to lead to a solution within the bound it is put into the focal list",
-	                          ".95", Bounds("0", "1"));
-	add_warm_start_options(parser);
+	                          "if a search node has at least the given probability to lead to a solution within the bound it is put into the focal list", ".95",
+	                          Bounds("0", "1"));
+	add_bounded_cost_warm_start_options(parser);
 	add_percentage_based_error_option(parser);
 	add_online_variance_option(parser);
 	add_d_tie_breaking_option(parser);
@@ -235,8 +236,10 @@ static auto _parse_pbees(OptionParser &parser) -> std::shared_ptr<SearchEngine> 
 	nancy_assumptions_opts.set("cost_bound", opts.get<int>("bound"));
 	nancy_assumptions_opts.set<std::shared_ptr<Evaluator>>("f", f_evaluator);
 	nancy_assumptions_opts.set<std::shared_ptr<FloatingPointEvaluator>>("f_hat", f_hat_evaluator);
-	if (opts.get<bool>("use_online_variance"))
+	if (opts.get<bool>("use_online_variance")) {
 		nancy_assumptions_opts.set<std::shared_ptr<heuristic_error::HeuristicError>>("heuristic_error", heuristic_error);
+		nancy_assumptions_opts.set<std::shared_ptr<FloatingPointEvaluator>>("d_hat", debiased_distance);
+	}
 	auto nancy_assumptions_evaluator = std::make_shared<bounded_cost_search::NancyAssumptionsCBSEvaluator>(nancy_assumptions_opts);
 
 	auto fp_f_opts = options::Options();
@@ -268,7 +271,7 @@ static auto _parse_pbeeps(OptionParser &parser) -> std::shared_ptr<SearchEngine>
 	parser.add_option<double>("focal_threshold",
 	                          "if a search node has at least the given probability to lead to a solution within the bound it is put into the focal list", ".95",
 	                          Bounds("0", "1"));
-	add_warm_start_options(parser);
+	add_bounded_cost_warm_start_options(parser);
 	add_percentage_based_error_option(parser);
 	add_online_variance_option(parser);
 	add_d_tie_breaking_option(parser);

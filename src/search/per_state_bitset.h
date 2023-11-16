@@ -3,6 +3,7 @@
 
 #include "per_state_array.h"
 
+#include <limits>
 #include <vector>
 
 

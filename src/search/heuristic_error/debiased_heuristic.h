@@ -10,6 +10,7 @@ class DebiasedHeuristic : public floating_point_evaluator::FloatingPointEvaluato
 	std::shared_ptr<Evaluator> heuristic;
 	std::shared_ptr<FloatingPointEvaluator> distance;
 	std::shared_ptr<HeuristicError> heuristic_error;
+	const bool admissible_h;
 
 	auto compute_value(EvaluationContext &eval_context) -> double override;
 

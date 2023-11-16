@@ -28,7 +28,8 @@ public:
 	using typename FloatingPointOpenList<N, T>::key_type;
 	using typename FloatingPointOpenList<N, T>::value_type;
 
-	auto top() const -> const value_type & override;
+	[[nodiscard]] auto top() const -> const value_type & override;
+	[[nodiscard]] auto top_key() const -> const key_type & override;
 	[[nodiscard]] auto empty() const -> bool override;
 	void push(const key_type &key, const T &value, bool preferred) override;
 	void emplace(const key_type &key, T &&value, bool preferred) override;
@@ -65,6 +66,11 @@ auto AlternationOpenList<N, T>::get_best_list() const -> const sublist_type & {
 template <std::size_t N, class T>
 auto AlternationOpenList<N, T>::top() const -> const value_type & {
 	return get_best_list().open_list->top();
+}
+
+template <std::size_t N, class T>
+auto AlternationOpenList<N, T>::top_key() const -> const key_type & {
+	return get_best_list().open_list->top_key();
 }
 
 template <std::size_t N, class T>

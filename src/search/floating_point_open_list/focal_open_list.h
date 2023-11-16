@@ -24,7 +24,7 @@ public:
 	using typename FloatingPointOpenList<N, T>::key_type;
 	using typename FloatingPointOpenList<N, T>::value_type;
 
-	auto top() const -> const value_type & override { return !focal.empty() ? focal.top().second : queue.top().second; }
+	[[nodiscard]] auto top() const -> const value_type & override { return !focal.empty() ? focal.top().second : queue.top().second; }
 	[[nodiscard]] auto empty() const -> bool override { return focal.empty() && queue.empty(); }
 	void push(const key_type &key, const value_type &value, bool) override { queue.push({key, value}); }
 	void emplace(const key_type &key, value_type &&value, bool) override { queue.emplace(key, value); }
@@ -32,7 +32,7 @@ public:
 	void emplace_focal(double key, value_type &&value, bool) override { focal.emplace(key, value); }
 	void pop() override { if (!focal.empty()) focal.pop(); else queue.pop(); }
 
-	FocalOpenList() : FocalOpenList(FloatingPointOpenList<N, T>::default_compare, focal_default_compare) {}
+	FocalOpenList() : FocalOpenList(FloatingPointOpenList<N, T>::get_default_compare(), focal_default_compare) {}
 	FocalOpenList(compare_type compare, focal_compare_type compare_focal) : FloatingPointOpenList<N, T>(), queue(compare), focal(compare_focal) {}
 };
 } // namespace floating_point_open_list

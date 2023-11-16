@@ -12,6 +12,7 @@ protected:
 	const int cost_bound;
 	const std::shared_ptr<Evaluator> f_evaluator;
 	const std::shared_ptr<floating_point_evaluator::FloatingPointEvaluator> f_hat_evaluator;
+	const std::shared_ptr<floating_point_evaluator::FloatingPointEvaluator> d_hat_evaluator;
 	const std::shared_ptr<heuristic_error::HeuristicError> heuristic_error;
 
 	static auto cumulative_distribution(double x) -> double;
