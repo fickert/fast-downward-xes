@@ -1,8 +1,16 @@
-This is a fork of [Fast Downward](http://www.fast-downward.org/) extended with an implementation of the XES bounded-cost search algorithm as introduced in the IJCAI'21 paper **Bounded-Cost Search Using Estimates of Uncertainty** (M. Fickert, T. Gu, and W. Ruml). The repository also contains implementations of the other bounded-cost algorithms evaluated in the paper, including potential search, BEES, and BEEPS.
+This is a fork of [Fast Downward](http://www.fast-downward.org/) extended with implementations of the expected-effort based bounded-cost and bounded-suboptimal search algorithms XES and DXES as introduced in the following papers:
+* M. Fickert, T. Gu, and W. Ruml: **[Bounded-Cost Search Using Estimates of Uncertainty](https://fai.cs.uni-saarland.de/fickert/papers/ijcai21.pdf)** (IJCAI'21)
+* M. Fickert, T. Gu, and W. Ruml: **[New Results in Bounded-Suboptimal Search](https://fai.cs.uni-saarland.de/fickert/papers/aaai22.pdf)** (AAAI'22)
+
+ The repository also contains implementations of the other bounded-cost and bounded-suboptimal search algorithms evaluated in the paper. This includes potential search, BEES, and BEEPS for bounded-cost search, and EES variants, CDXES, and round-robin algorithms for bounded-suboptimal search.
 
 Example usage for XES:
 
-`./fast-downward.py domain.pddl problem.pddl --evaluator "hff=ff()"" --search "xes(hff, ff_distance(hff), preferred=[hff], bound=42)"`
+`./fast-downward.py domain.pddl problem.pddl --evaluator "hff=ff()" --search "xes(hff, ff_distance(hff), preferred=[hff], bound=42)"`
+
+Example usage for RR-DXES:
+
+`./fast-downward.py domain.pddl problem.pddl --evaluator "hlm=lmcut()" --if-unit-cost --evaluator "hlm1=hlm" --if-non-unit-cost --evaluator "hlm1=lmcut(transform=adapt_costs(ONE))" --always --evaluator "hff=ff()" --search "dxes(hlm, hlm1, suboptimality_factor=1.5)"`
 
 # Fast Downward
 
